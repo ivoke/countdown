@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <title>jquery countdown</title>
+</head>
+<body>
+
+
+  <span data-zero="2013.06.25 14:20:00"></span>
+
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+  <script type="text/javascript" src="jquery-countdown.js"></script>
+
+  <script type="text/javascript">
+    $('span').countdown();
+
+    // var date = Date.parse($('span').data('zero')),
+    //     left = Math.ceil((date - new Date()) / 1000),
+    //     period_conf = { 3600: 3600, 60: 60, 1: 1 },
+    //     periods_possible = [],
+    //     period;
+
+    // for (key in period_conf) {
+    //   if (parseInt(key) < left) {
+    //     periods_possible.push(period_conf[key]);
+    //   }
+    // }
+
+    // period = Math.max.apply(null, periods_possible);
+
+    // var first_callback = left % period;
+
+    // setTimeout(function() {
+    //   console.dir(new Date().toLocaleString());
+
+    //   setInterval(function() {
+    //     console.dir(new Date().toLocaleString());
+    //   }, period * 1000)
+
+    // }, first_callback * 1000)
+
+  </script>
+
+</body>
+</html>
