@@ -12,7 +12,7 @@
 
   Countdown.prototype.init = function() {
     var self = this,
-        firstChange = this.left() % this.period();
+        firstChange = this.remaining() % this.period();
 
     self.render();
 
@@ -21,9 +21,8 @@
     }
 
     setTimeout(function() {
-      console.dir(new Date().toLocaleString());
-
       self.render();
+      self.trigger();
       self.nextCall();
     }, firstChange );
   };
@@ -36,14 +35,14 @@
     }
 
     setTimeout(function() {
-      console.dir(new Date().toLocaleString());
       self.render();
+      self.trigger()
       self.nextCall();
-    }, self.period());
+    }, this.period());
   };
 
   Countdown.prototype.render = function() {
-    var left = this.sLeft(),
+    var left = this.sRemaining(),
         cTemplate = templ(this.template()),
         daysLeft, hoursLeft, minutesLeft, secondsLeft;
 
@@ -63,10 +62,20 @@
     }));
   };
 
+  Countdown.prototype.trigger = function() {
+    if (this.period()) {
+      this.el.trigger('countdownOnChange', this.period());
+      this.conf["onChange"].call(this);
+    } else {
+      this.conf["onEnd"].call(this);
+      this.el.trigger('countdownOnEnd');
+    }
+  }
+
   Countdown.prototype.template = function () {
     var templates = this.conf["templates"],
-        applicableTemplate,
-        applicableTemplatePrio = 0;
+        applicableTemplate = '',
+        applicableTemplatePrio = -1;
 
     /* static template */
     if (typeof(templates) === "string") {
@@ -79,7 +88,7 @@
 
     /* variable template */
     for (key in templates) {
-      if ( parseInt(key) < this.sLeft() && parseInt(key) > applicableTemplatePrio ) {
+      if ( parseInt(key) <= this.sRemaining() && parseInt(key) > applicableTemplatePrio ) {
         applicableTemplatePrio = key;
         applicableTemplate = templates[key];
       }
@@ -89,43 +98,31 @@
   };
 
   Countdown.prototype.period = function() {
-    var intervals = this.conf["intervals"],
-        applicablePeriods = [];
+    var interval = this.conf["interval"];
 
-    if (this.left() < 0) {
+    if (this.remaining() < 0) {
       return false;
     }
 
-    /* static period */
-    if (typeof(intervals) === "number" || typeof(intervals) === "string") {
-      return parseInt(intervals) * 1000;
-    }
-
-    /* variable period */
-    for (key in intervals) {
-      if (parseInt(key) <= this.left() / 1000 ) {
-        applicablePeriods.push(intervals[key]);
-      }
-    }
-
-    return Math.max.apply(null, applicablePeriods) * 1000;
+    return interval * 1000;
   };
 
   /* returns msseconds left */
-  Countdown.prototype.left = function() {
+  Countdown.prototype.remaining = function() {
     return this.ends - new Date();
   };
 
-  Countdown.prototype.sLeft = function() {
-    return Math.ceil(this.left() / 1000);
+  Countdown.prototype.sRemaining = function() {
+    return Math.ceil(this.remaining() / 1000);
   };
 
   $.fn.countdown = function(options) {
     var settings = $.extend({
-      intervals: { 3600: 3600, 60: 60, 1: 1},
+      interval: 1,
       templates: {
-        3599: "#{ (this.h == 1) ? this.h + ' hour': this.h + ' hours' } left",
-        59: "#{ (this.m == 1) ? this.m + ' minute': this.m + ' minutes' } left",
+        86400: "#{ (this.d == 1) ? this.d + ' day': this.d + ' days' } left",
+        3600: "#{ (this.h == 1) ? this.h + ' hour': this.h + ' hours' } left",
+        60: "#{ (this.m == 1) ? this.m + ' minute': this.m + ' minutes' } left",
         0: "#{ (this.s == 1) ? this.s + ' second': this.s + ' seconds' } left",
         end: "ended"
       },

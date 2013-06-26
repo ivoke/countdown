@@ -6,39 +6,25 @@
 <body>
 
 
-  <span data-zero="2013.06.25 14:20:00"></span>
+  <p data-zero="2013.06.26 11:43:00"></p>
+  <p data-zero="2013.06.27 11:53:00"></p>
 
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
   <script type="text/javascript" src="jquery-countdown.js"></script>
 
   <script type="text/javascript">
-    $('span').countdown();
-
-    // var date = Date.parse($('span').data('zero')),
-    //     left = Math.ceil((date - new Date()) / 1000),
-    //     period_conf = { 3600: 3600, 60: 60, 1: 1 },
-    //     periods_possible = [],
-    //     period;
-
-    // for (key in period_conf) {
-    //   if (parseInt(key) < left) {
-    //     periods_possible.push(period_conf[key]);
-    //   }
-    // }
-
-    // period = Math.max.apply(null, periods_possible);
-
-    // var first_callback = left % period;
-
-    // setTimeout(function() {
-    //   console.dir(new Date().toLocaleString());
-
-    //   setInterval(function() {
-    //     console.dir(new Date().toLocaleString());
-    //   }, period * 1000)
-
-    // }, first_callback * 1000)
-
+    $('p').countdown({
+      onChange: function() {  },
+      onEnd: function () {  },
+      interval: 60,
+      templates: {
+        86400: "<span style='color: green;'>#{ (this.d == 1) ? this.d + ' day': this.d + ' days' } left</span>",
+        3600: "<span style='color: green;'>#{ (this.h == 1) ? this.h + ' hour': this.h + ' hours' } left</span>",
+        61: "<span style='color: red;'>#{ (this.m == 1) ? this.m + ' minute': this.m + ' minutes' } left</span>",
+        0: "<span style='color: grey;'>0 minutes left</span>",
+        end: "ended"
+      }
+    });
   </script>
 
 </body>
